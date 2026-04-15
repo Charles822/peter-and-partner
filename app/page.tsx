@@ -11,14 +11,14 @@ export default function LandingPage() {
             <div className="bg-black text-white p-1 rounded-md">
               <Code2 className="w-4 h-4" />
             </div>
-            <span className="font-montserrat font-semibold tracking-tight">Peter & Partner</span>
+            <span className="font-montserrat font-semibold tracking-tight">On-Call CTO</span>
           </a>
 
           <div className="h-4 w-px bg-gray-200"></div>
 
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-500 font-montserrat">
             <a href="#health-check" className="hover:text-black transition-colors">Health Check</a>
-            <a href="#solutions" className="hover:text-black transition-colors">Solutions</a>
+            <a href="#ladder" className="hover:text-black transition-colors">The Ladder</a>
             <a href="#contact" className="hover:text-black transition-colors flex items-center gap-1">
               Contact
               <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tighter">LIVE</span>
@@ -38,44 +38,38 @@ export default function LandingPage() {
         
         {/* Hero Section */}
         <div className="bg-white rounded-[2.5rem] p-8 md:p-14 lg:p-20 shadow-sm border border-gray-100 relative overflow-hidden group">
-          {/* Grid Background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
 
           <div className="flex flex-col items-center text-center relative z-10 max-w-4xl mx-auto">
             
-            {/* Badge */}
             <div className="animate-fade-up delay-100 inline-flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-mono mb-8 hover:bg-white hover:shadow-sm transition-all cursor-default">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              MACAO’S FRACTIONAL TECH TEAM • ON-CALL SUPPORT
+              MACAO’S ON-DEMAND TECH LEAD • PART-TIME CTO
             </div>
 
-            {/* Headline */}
             <h1 className="animate-fade-up delay-200 text-6xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tight mb-8 text-gray-900 font-medium font-serif">
               Unblock your <br />
               <span className="italic text-gray-400">Revenue.</span>
             </h1>
 
-            {/* Description */}
             <p className="animate-fade-up delay-300 text-lg md:text-xl text-gray-500 leading-relaxed max-w-2xl mb-10 font-montserrat font-medium text-balance">
-              We fix the technical debt that’s costing you sales. From broken forms to AI-driven lead filtering, we provide on-call engineering for Macao businesses.
+              We are the technical team you need, when you need it. From fixing "boring" tech debt to deploying high-end AI automation, we provide part-time CTO leadership for Macao businesses.
             </p>
 
-            {/* Buttons */}
             <div className="animate-fade-up delay-500 flex flex-wrap justify-center gap-4 w-full">
               <button className="bg-gray-900 text-white pl-6 pr-5 py-3.5 rounded-xl text-sm hover:bg-black hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 font-montserrat font-medium shadow-xl shadow-gray-900/20">
-                Get Free Health Check
+                Book a 20-Min Health Check
                 <Bolt className="w-4 h-4" />
               </button>
               <button className="bg-white border border-gray-200 text-gray-600 px-6 py-3.5 rounded-xl text-sm hover:border-gray-400 hover:text-gray-900 transition-all duration-300 font-montserrat font-medium flex items-center gap-2">
                 <FileText className="w-4 h-4" />
-                Our Solutions
+                See Our Process
               </button>
             </div>
 
-            {/* Code Preview Snippet */}
             <div className="mt-16 w-full max-w-3xl animate-fade-up delay-500 mx-auto">
                <div className="rounded-xl border border-gray-200 bg-[#111] shadow-2xl overflow-hidden">
                   <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-800 bg-[#1a1a1a]">
@@ -150,40 +144,56 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Solutions Section */}
-        <div id="solutions" className="py-24">
+        {/* The Digital Growth Ladder Section */}
+        <div id="ladder" className="py-24">
+          <div className="flex flex-col items-center text-center mb-16">
+            <h2 className="text-4xl md:text-5xl tracking-tight text-gray-900 font-medium mb-4 font-serif">The Digital Growth Ladder</h2>
+            <p className="text-gray-500 font-montserrat max-w-lg">Our systematic process to stabilize, clarify, and scale your business tech.</p>
+          </div>
           <div className="grid md:grid-cols-3 gap-8">
-              {/* Feature 1: Conversion */}
+              {/* Step 1: Foundation */}
               <div className="group p-8 rounded-3xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-300">
-                  <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                      <Zap className="w-6 h-6 text-gray-900" />
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Monitor className="w-6 h-6 text-gray-900" />
+                    </div>
+                    <span className="text-xs font-mono text-gray-400 uppercase tracking-widest">Step 01</span>
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 font-montserrat">The Conversion Fix</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed font-montserrat">
-                      Stop guessing. We implement GTM Server-Side and Meta CAPI so your ads see 100% of your conversions. Accurate data = Lower CAC.
+                  <h3 className="text-xl font-semibold mb-3 font-montserrat">The Foundation</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed font-montserrat mb-4">
+                      We fix the "boring" tech debt—slow sites, broken forms, and hanging SAP integrations. We stop the leaks first.
                   </p>
+                  <div className="text-xs font-mono text-emerald-600 bg-emerald-50 px-2 py-1 rounded inline-block">GOAL: STABILITY</div>
               </div>
 
-              {/* Feature 2: Lead Filter */}
+              {/* Step 2: Intelligence */}
               <div className="group p-8 rounded-3xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-300">
-                  <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                      <Filter className="w-6 h-6 text-gray-900" />
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Zap className="w-6 h-6 text-gray-900" />
+                    </div>
+                    <span className="text-xs font-mono text-gray-400 uppercase tracking-widest">Step 02</span>
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 font-montserrat">The Smart Filter</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed font-montserrat">
-                      Custom AI agents that qualify every inquiry 24/7. Your team only talks to "High Intent" buyers. No more junk leads.
+                  <h3 className="text-xl font-semibold mb-3 font-montserrat">The Intelligence</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed font-montserrat mb-4">
+                      We install server-side tracking (Meta CAPI / GTM) so you know exactly which ads are driving your ROI.
                   </p>
+                  <div className="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block">GOAL: CLARITY</div>
               </div>
 
-              {/* Feature 3: Emergency Dev */}
+              {/* Step 3: Scaling */}
               <div className="group p-8 rounded-3xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-300">
-                  <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                      <Monitor className="w-6 h-6 text-gray-900" />
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Filter className="w-6 h-6 text-gray-900" />
+                    </div>
+                    <span className="text-xs font-mono text-gray-400 uppercase tracking-widest">Step 03</span>
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 font-montserrat">The Emergency Dev</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed font-montserrat">
-                      Website hanging? SAP issues? Shopify/WP technical debt? We are your on-call CTOs for one-off fixes and deep technical unblocking.
+                  <h3 className="text-xl font-semibold mb-3 font-montserrat">The Scaling</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed font-montserrat mb-4">
+                      We deploy custom AI agents to automate lead qualification 24/7. Scale your business without scaling your head count.
                   </p>
+                  <div className="text-xs font-mono text-purple-600 bg-purple-50 px-2 py-1 rounded inline-block">GOAL: GROWTH</div>
               </div>
           </div>
         </div>
@@ -320,7 +330,7 @@ export default function LandingPage() {
               </button>
           </div>
           <p className="mt-12 text-xs text-gray-400 font-mono uppercase tracking-widest">
-             © 2026 Peter & Partner • Unblocking Macao’s Digital Economy.
+             © 2026 On-Call CTO • Unblocking Macao’s Digital Economy.
           </p>
         </div>
       </main>
