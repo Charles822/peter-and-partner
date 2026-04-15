@@ -27,10 +27,16 @@
     100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
   }
 
+  @keyframes terminal-cursor-blink {
+    0%, 45% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
   --animate-fade-up: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-slide-in: slide-in-right 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-infinite-scroll: infinite-scroll 40s linear infinite;
   --animate-pulse-ring: pulse-ring 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  --animate-terminal-cursor: terminal-cursor-blink 1s step-end infinite;
 }
 
 @layer base {
