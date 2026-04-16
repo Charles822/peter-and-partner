@@ -359,9 +359,12 @@ export default function LandingPage() {
               >
                   Claim Your Free Health Check
               </a>
-              <button type="button" className="bg-white border border-gray-200 text-gray-900 px-8 py-3 rounded-full font-medium hover:bg-gray-50 transition-colors font-montserrat">
+              <a
+                href="mailto:peter_mason@agentmail.to"
+                className="bg-white border border-gray-200 text-gray-900 px-8 py-3 rounded-full font-medium hover:bg-gray-50 transition-colors font-montserrat inline-flex items-center justify-center"
+              >
                   Email Peter
-              </button>
+              </a>
           </div>
           <div className="mt-12 space-y-1 text-sm text-gray-500 font-montserrat">
             <p className="font-medium text-gray-700">Metaverse Consulting</p>
