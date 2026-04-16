@@ -2,10 +2,16 @@ import React from 'react';
 import Image from 'next/image';
 import { Code2, Bolt, FileText, Activity, Zap, Monitor, Database, MapPin } from 'lucide-react';
 import { HeroTerminal } from './components/HeroTerminal';
+import { FaqSection } from './components/FaqSection';
+import { faqJsonLd } from './faq-data';
 
 export default function LandingPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }}
+      />
       {/* Navbar */}
       <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 animate-fade-up">
         <nav className="glass-nav border border-gray-200/60 rounded-full pl-5 pr-2 py-2 flex items-center gap-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300">
@@ -18,11 +24,12 @@ export default function LandingPage() {
 
           <div className="h-4 w-px bg-gray-200"></div>
 
-          <div className="hidden lg:flex items-center gap-5 text-sm font-medium text-gray-500 font-montserrat">
+          <div className="hidden lg:flex items-center gap-4 text-sm font-medium text-gray-500 font-montserrat">
             <a href="#health-check" className="hover:text-black transition-colors">Free Health Check</a>
             <a href="#ladder" className="hover:text-black transition-colors text-nowrap">The Ladder</a>
             <a href="#team" className="hover:text-black transition-colors">Team</a>
             <a href="#clients" className="hover:text-black transition-colors">Clients</a>
+            <a href="#faq" className="hover:text-black transition-colors">FAQ</a>
             <a href="#book" className="hover:text-black transition-colors flex items-center gap-1">
               Contact
               <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tighter">LIVE</span>
@@ -294,6 +301,8 @@ export default function LandingPage() {
             You leave with a short prioritized readout — what to fix first, mapped to <span className="font-medium text-gray-800">Relief → Data → AI</span> — and whether ongoing fractional CTO makes sense. <a href="#book" className="text-gray-900 font-medium underline underline-offset-4 decoration-gray-300 hover:decoration-gray-900 transition-colors">Book the health check</a>.
           </p>
         </div>
+
+        <FaqSection />
 
         {/* Footer */}
         <div id="book" className="py-20 border-t border-gray-200 mt-12 text-center">
