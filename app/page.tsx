@@ -5,6 +5,24 @@ import { HeroTerminal } from './components/HeroTerminal';
 import { FaqSection } from './components/FaqSection';
 import { faqJsonLd } from './faq-data';
 
+const CAL_BOOKING_URL = "https://cal.com/charles-fauchet-58ajxq/30min";
+
+function ClientLogo({ src, alt }: { src: string; alt: string }) {
+  const isSvg = src.endsWith(".svg");
+  return (
+    <div className="mb-6 flex h-14 items-center">
+      <Image
+        src={src}
+        alt={alt}
+        width={220}
+        height={64}
+        unoptimized={isSvg}
+        className="max-h-14 w-auto max-w-[220px] object-contain object-left"
+      />
+    </div>
+  );
+}
+
 export default function LandingPage() {
   return (
     <>
@@ -38,7 +56,12 @@ export default function LandingPage() {
 
           <div className="h-4 w-px bg-gray-200 hidden lg:block"></div>
 
-          <a href="#book" className="group bg-black text-white text-xs px-4 py-2.5 rounded-full hover:bg-gray-800 hover:scale-[1.02] transition-all duration-300 flex items-center gap-2 font-montserrat font-medium shadow-lg shadow-black/10 text-nowrap whitespace-nowrap">
+          <a
+            href={CAL_BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group bg-black text-white text-xs px-4 py-2.5 rounded-full hover:bg-gray-800 hover:scale-[1.02] transition-all duration-300 flex items-center gap-2 font-montserrat font-medium shadow-lg shadow-black/10 text-nowrap whitespace-nowrap"
+          >
             Book Health Check
           </a>
         </nav>
@@ -64,8 +87,8 @@ export default function LandingPage() {
 
             {/* Headline */}
             <h1 className="animate-fade-up delay-200 text-6xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tight mb-8 text-gray-900 font-medium font-serif">
-              Macao&apos;s Technical Fixer. <br />
-              <span className="italic text-gray-400">One Day a Week.</span>
+              Macao&apos;s Part-Time CTO. <br />
+              <span className="italic text-gray-400">In your office, on your stack.</span>
             </h1>
 
             {/* Description */}
@@ -75,10 +98,15 @@ export default function LandingPage() {
 
             {/* Buttons */}
             <div className="animate-fade-up delay-500 flex flex-wrap justify-center gap-4 w-full">
-              <button className="bg-gray-900 text-white pl-6 pr-5 py-3.5 rounded-xl text-sm hover:bg-black hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 font-montserrat font-medium shadow-xl shadow-gray-900/20">
+              <a
+                href={CAL_BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gray-900 text-white pl-6 pr-5 py-3.5 rounded-xl text-sm hover:bg-black hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 font-montserrat font-medium shadow-xl shadow-gray-900/20"
+              >
                 Book a 20-Min Health Check
                 <Bolt className="w-4 h-4" />
-              </button>
+              </a>
               <button className="bg-white border border-gray-200 text-gray-600 px-6 py-3.5 rounded-xl text-sm hover:border-gray-400 hover:text-gray-900 transition-all duration-300 font-montserrat font-medium flex items-center gap-2">
                 <FileText className="w-4 h-4" />
                 See Our Process
@@ -166,7 +194,7 @@ export default function LandingPage() {
             <article className="group p-8 rounded-3xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-300 text-left">
               <div className="relative aspect-[4/5] w-full max-h-80 mx-auto mb-6 overflow-hidden rounded-2xl bg-gray-100">
                 <Image
-                  src="/team/charles.jpg"
+                  src="/team/charles.png"
                   alt="Charles Fauchet, CTO and engineering lead"
                   fill
                   className="object-cover"
@@ -183,7 +211,7 @@ export default function LandingPage() {
             <article className="group p-8 rounded-3xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-300 text-left">
               <div className="relative aspect-[4/5] w-full max-h-80 mx-auto mb-6 overflow-hidden rounded-2xl bg-gray-100">
                 <Image
-                  src="/team/peter.jpg"
+                  src="/team/peter.png"
                   alt="Peter Mason, CEO and strategy (AI agent)"
                   fill
                   className="object-cover"
@@ -204,6 +232,7 @@ export default function LandingPage() {
           <h2 className="text-4xl md:text-5xl tracking-tight text-gray-900 font-medium mb-16 font-serif text-center">What We&apos;ve Built</h2>
           <div className="grid sm:grid-cols-2 gap-6">
             <div className="p-8 rounded-3xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 text-left">
+              <ClientLogo src="/projects/rare.svg" alt="Rare Champagne logo" />
               <h3 className="text-lg font-semibold font-montserrat text-gray-900 mb-2">Rare Champagne</h3>
               <p className="text-sm text-gray-500 leading-relaxed font-montserrat mb-4">
                 From standalone CMS to database and CRM integration — one coherent data layer for catalog and customers.
@@ -211,6 +240,7 @@ export default function LandingPage() {
               <span className="text-xs font-bold font-mono text-gray-400 uppercase tracking-widest">Data architecture</span>
             </div>
             <div className="p-8 rounded-3xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 text-left">
+              <ClientLogo src="/projects/agence-symbiose-logo.svg" alt="Agence Symbiose logo" />
               <h3 className="text-lg font-semibold font-montserrat text-gray-900 mb-2">Agence Symbiose</h3>
               <p className="text-sm text-gray-500 leading-relaxed font-montserrat mb-4">
                 Meta lead automation — less manual triage, faster handoff from ad click to qualified conversation.
@@ -218,6 +248,7 @@ export default function LandingPage() {
               <span className="text-xs font-bold font-mono text-gray-400 uppercase tracking-widest">Data architecture</span>
             </div>
             <div className="p-8 rounded-3xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 text-left">
+              <ClientLogo src="/projects/nauticalvibes.png" alt="Nautical Vibes logo" />
               <h3 className="text-lg font-semibold font-montserrat text-gray-900 mb-2">Nautical Vibes</h3>
               <p className="text-sm text-gray-500 leading-relaxed font-montserrat mb-4">
                 Server-side tracking with Google Tag Manager — more reliable measurement and cleaner signal for campaigns.
@@ -225,6 +256,7 @@ export default function LandingPage() {
               <span className="text-xs font-bold font-mono text-gray-400 uppercase tracking-widest">Data architecture</span>
             </div>
             <div className="p-8 rounded-3xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 text-left">
+              <ClientLogo src="/projects/voxai.png" alt="VoxAI logo" />
               <h3 className="text-lg font-semibold font-montserrat text-gray-900 mb-2">VoxAI</h3>
               <p className="text-sm text-gray-500 leading-relaxed font-montserrat mb-4">
                 Operational AI agent on OpenClaw plus workflow automation — hands-on ops support that runs around the clock.
@@ -298,7 +330,15 @@ export default function LandingPage() {
           </div>
 
           <p className="mt-10 text-gray-600 font-montserrat text-sm md:text-base leading-relaxed max-w-3xl relative z-10">
-            You leave with a short prioritized readout — what to fix first, mapped to <span className="font-medium text-gray-800">Relief → Data → AI</span> — and whether ongoing fractional CTO makes sense. <a href="#book" className="text-gray-900 font-medium underline underline-offset-4 decoration-gray-300 hover:decoration-gray-900 transition-colors">Book the health check</a>.
+            You leave with a short prioritized readout — what to fix first, mapped to <span className="font-medium text-gray-800">Relief → Data → AI</span> — and whether ongoing fractional CTO makes sense.{" "}
+            <a
+              href={CAL_BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-900 font-medium underline underline-offset-4 decoration-gray-300 hover:decoration-gray-900 transition-colors"
+            >
+              Book the health check
+            </a>.
           </p>
         </div>
 
@@ -310,15 +350,24 @@ export default function LandingPage() {
           <p className="text-gray-500 mb-8 max-w-lg mx-auto font-montserrat font-medium leading-relaxed">
             Book your 20-minute health check. Zero cost. Zero obligation. We map findings to Relief → Data → AI and you get a clear next-step roadmap.
           </p>
-          <div className="flex justify-center gap-4">
-              <button className="bg-black text-white px-8 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors flex items-center gap-2 font-montserrat">
+          <div className="flex flex-wrap justify-center gap-4">
+              <a
+                href={CAL_BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black text-white px-8 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors inline-flex items-center justify-center gap-2 font-montserrat"
+              >
                   Claim Your Free Health Check
-              </button>
-              <button className="bg-white border border-gray-200 text-gray-900 px-8 py-3 rounded-full font-medium hover:bg-gray-50 transition-colors font-montserrat">
+              </a>
+              <button type="button" className="bg-white border border-gray-200 text-gray-900 px-8 py-3 rounded-full font-medium hover:bg-gray-50 transition-colors font-montserrat">
                   Email Peter
               </button>
           </div>
-          <p className="mt-12 text-xs text-gray-400 font-mono uppercase tracking-widest">
+          <div className="mt-12 space-y-1 text-sm text-gray-500 font-montserrat">
+            <p className="font-medium text-gray-700">Metaverse Consulting</p>
+            <p>54 Rua Pedro Coutinho, Edf Hoi Fai, Macao</p>
+          </div>
+          <p className="mt-8 text-xs text-gray-400 font-mono uppercase tracking-widest">
              © 2026 On-Call CTO • Unblocking Macao&apos;s Digital Economy.
           </p>
         </div>
