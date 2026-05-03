@@ -47,6 +47,7 @@ export default function LandingPage() {
             <a href="#ladder" className="hover:text-black transition-colors text-nowrap">The Ladder</a>
             <a href="#team" className="hover:text-black transition-colors">Team</a>
             <a href="#clients" className="hover:text-black transition-colors">Clients</a>
+            <a href="/cess" className="hover:text-black transition-colors text-nowrap">CEF search</a>
             <a href="#faq" className="hover:text-black transition-colors">FAQ</a>
             <a href="#book" className="hover:text-black transition-colors flex items-center gap-1">
               Contact
@@ -365,6 +366,14 @@ export default function LandingPage() {
               >
                   Email Peter
               </a>
+          </div>
+          <div className="mt-10 space-y-2 text-sm text-gray-500 font-montserrat">
+            <p>
+              <a href="/cess" className="text-gray-700 hover:text-black underline underline-offset-4 decoration-gray-300 hover:decoration-gray-900">
+                CEF course search (unofficial)
+              </a>
+              {" "}— keyword search for continuing education courses (English).
+            </p>
           </div>
           <div className="mt-12 space-y-1 text-sm text-gray-500 font-montserrat">
             <p className="font-medium text-gray-700">Metaverse Consulting</p>
