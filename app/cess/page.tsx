@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Code2 } from "lucide-react";
+import { ChevronDown, Code2 } from "lucide-react";
 import { CessSearchClient } from "./CessSearchClient";
 import {
   cessFaqItems,
@@ -98,28 +98,34 @@ export default function CessPage() {
 
         <CessSearchClient />
 
-        <section
-          className="mt-14 rounded-3xl border border-gray-100 bg-white p-6 md:p-8 shadow-sm"
-          aria-labelledby="cess-faq-heading"
-        >
+        <section className="mt-14" aria-labelledby="cess-faq-heading">
           <h2
             id="cess-faq-heading"
             className="text-xl font-medium font-serif text-gray-900 mb-6"
           >
             Questions about this search
           </h2>
-          <dl className="space-y-6">
+          <div className="space-y-3">
             {faqItems.map((item) => (
-              <div key={item.question}>
-                <dt className="font-medium font-montserrat text-gray-900 mb-2">
-                  {item.question}
-                </dt>
-                <dd className="text-gray-600 font-montserrat text-sm leading-relaxed">
-                  {item.answer}
-                </dd>
-              </div>
+              <details
+                key={item.question}
+                className="group rounded-2xl border border-gray-100 bg-gray-50/60 transition-colors open:border-gray-200 open:bg-white hover:bg-gray-50/90 open:hover:bg-white"
+              >
+                <summary className="flex cursor-pointer list-none items-start gap-3 px-4 py-4 font-montserrat font-medium text-gray-900 outline-none [&::-webkit-details-marker]:hidden focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 rounded-2xl">
+                  <ChevronDown
+                    className="mt-0.5 h-5 w-5 shrink-0 text-gray-400 transition-transform duration-200 group-open:rotate-180"
+                    aria-hidden
+                  />
+                  <span className="text-left">{item.question}</span>
+                </summary>
+                <div className="border-t border-gray-100 px-4 pb-4 pt-0">
+                  <p className="pl-8 text-gray-600 font-montserrat text-sm leading-relaxed">
+                    {item.answer}
+                  </p>
+                </div>
+              </details>
             ))}
-          </dl>
+          </div>
         </section>
 
         <section className="mt-16 pt-12 border-t border-gray-200 text-center">
