@@ -1,4 +1,4 @@
-/** Aligns with PDAC Edge Function response rows — see AGENT_HANDOFF.md */
+/** Mirrors `pdac_courses` — Edge responses may omit fields (filled as null). */
 export type PdacCourse = {
   source_id: number;
   course_no: string | null;
@@ -7,12 +7,30 @@ export type PdacCourse = {
   org_name_zh: string | null;
   org_name_pt: string | null;
   fee_mop: number | null;
+  other_fee_mop: number | null;
   start_date: string | null;
   end_date: string | null;
   tel: string | null;
   category_en: string | null;
   category_zh: string | null;
+  category_pt: string | null;
   target_audience_en: string | null;
+  target_audience_zh: string | null;
+  target_audience_pt: string | null;
   address_en: string | null;
+  address_zh: string | null;
+  hours: number | null;
+  schedule_en: string | null;
+  schedule_zh: string | null;
+  schedule_pt: string | null;
+  quota: string | null;
+  available: string | null;
   web_url: string | null;
+  w0: boolean | null;
+  w1: boolean | null;
+  w2: boolean | null;
+  w3: boolean | null;
+  w4: boolean | null;
+  w5: boolean | null;
+  w6: boolean | null;
 };

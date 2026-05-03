@@ -19,6 +19,24 @@ function formatFee(n: number | null): string {
   return `${n.toLocaleString("en-MO")} MOP`;
 }
 
+function formatHours(n: number | null): string {
+  if (n === null || Number.isNaN(n)) return "—";
+  return String(n);
+}
+
+const WEEK_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] as const;
+
+/** `w0`–`w6` weekday flags (Su–Sa); unknown/null columns are skipped. */
+function formatWeekdayFlags(c: PdacCourse): string {
+  const flags = [c.w0, c.w1, c.w2, c.w3, c.w4, c.w5, c.w6] as const;
+  const anyDefined = flags.some((f) => f !== null && f !== undefined);
+  if (!anyDefined) return "—";
+  const on = flags
+    .map((f, i) => (f === true ? WEEK_LABELS[i] : null))
+    .filter((x): x is (typeof WEEK_LABELS)[number] => x !== null);
+  return on.length ? on.join(" ") : "—";
+}
+
 export function CessSearchClient() {
   const [keyword, setKeyword] = useState("");
   const [courses, setCourses] = useState<PdacCourse[] | null>(null);
@@ -119,13 +137,20 @@ export function CessSearchClient() {
               ? "No courses matched your keyword."
               : `${courses.length} result${courses.length === 1 ? "" : "s"}`}
           </p>
+          {courses.length > 0 && (
+            <p className="text-xs text-gray-500 font-montserrat hidden md:block">
+              This table is wide—scroll horizontally to see hours, audience,
+              schedule, and other details. The first column stays visible while
+              you scroll.
+            </p>
+          )}
 
           {/* Desktop table */}
           <div className="hidden md:block overflow-x-auto rounded-3xl border border-gray-100 bg-white shadow-sm">
-            <table className="w-full text-left text-sm font-montserrat">
+            <table className="w-full min-w-6xl text-left text-sm font-montserrat">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/80 text-xs uppercase tracking-wide text-gray-500">
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                  <th className="sticky left-0 z-20 px-4 py-3 font-semibold whitespace-nowrap bg-gray-50/95 backdrop-blur-sm shadow-[4px_0_12px_-6px_rgba(0,0,0,0.12)]">
                     Course no.
                   </th>
                   <th className="px-4 py-3 font-semibold min-w-[200px]">
@@ -135,37 +160,120 @@ export function CessSearchClient() {
                     Organization
                   </th>
                   <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                    Fee
+                    Hours
+                  </th>
+                  <th className="px-4 py-3 font-semibold min-w-40">
+                    Audience
+                  </th>
+                  <th className="px-4 py-3 font-semibold min-w-40">
+                    Schedule
                   </th>
                   <th className="px-4 py-3 font-semibold whitespace-nowrap">
                     Start
                   </th>
                   <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                    End
+                  </th>
+                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                    Fee
+                  </th>
+                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                    Other fee
+                  </th>
+                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                    Quota
+                  </th>
+                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                    Avail.
+                  </th>
+                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
+                    Days
+                  </th>
+                  <th className="px-4 py-3 font-semibold min-w-48">
+                    Address
+                  </th>
+                  <th className="px-4 py-3 font-semibold whitespace-nowrap">
                     Phone
                   </th>
-                  <th className="px-4 py-3 font-semibold">Category</th>
+                  <th className="px-4 py-3 font-semibold min-w-32">
+                    Category
+                  </th>
                   <th className="px-4 py-3 font-semibold">Link</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-gray-700">
                 {courses.map((c) => (
-                  <tr key={`${c.source_id}-${c.course_no}`} className="hover:bg-gray-50/50">
-                    <td className="px-4 py-3 font-mono text-xs whitespace-nowrap">
+                  <tr
+                    key={`${c.source_id}-${c.course_no}`}
+                    className="group hover:bg-gray-50/50"
+                  >
+                    <td className="sticky left-0 z-10 px-4 py-3 font-mono text-xs whitespace-nowrap bg-white group-hover:bg-gray-50/50 shadow-[4px_0_12px_-6px_rgba(0,0,0,0.08)]">
                       {c.course_no ?? "—"}
                     </td>
                     <td className="px-4 py-3">{c.name_en ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-600">{orgLabel(c)}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {formatFee(c.fee_mop)}
+                    <td className="px-4 py-3 text-gray-600 max-w-[16rem]">
+                      <span className="line-clamp-2" title={orgLabel(c)}>
+                        {orgLabel(c)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums">
+                      {formatHours(c.hours)}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 max-w-56">
+                      <span
+                        className="line-clamp-2"
+                        title={c.target_audience_en ?? undefined}
+                      >
+                        {c.target_audience_en ?? "—"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 max-w-56">
+                      <span
+                        className="line-clamp-2"
+                        title={c.schedule_en ?? undefined}
+                      >
+                        {c.schedule_en ?? "—"}
+                      </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap font-mono text-xs">
                       {c.start_date ?? "—"}
                     </td>
+                    <td className="px-4 py-3 whitespace-nowrap font-mono text-xs">
+                      {c.end_date ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {formatFee(c.fee_mop)}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {formatFee(c.other_fee_mop)}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-xs">
+                      {c.quota ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-xs">
+                      {c.available ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-xs tracking-tight">
+                      {formatWeekdayFlags(c)}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 max-w-56">
+                      <span
+                        className="line-clamp-2"
+                        title={c.address_en ?? undefined}
+                      >
+                        {c.address_en ?? "—"}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 whitespace-nowrap text-xs">
                       {c.tel ?? "—"}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {c.category_en ?? "—"}
+                    <td className="px-4 py-3 text-gray-600 max-w-40">
+                      <span
+                        className="line-clamp-2"
+                        title={c.category_en ?? undefined}
+                      >
+                        {c.category_en ?? "—"}
+                      </span>
                     </td>
                     <td className="px-4 py-3">
                       {c.web_url ? (
@@ -205,15 +313,63 @@ export function CessSearchClient() {
                     <dt className="text-xs uppercase text-gray-400">Organization</dt>
                     <dd>{orgLabel(c)}</dd>
                   </div>
-                  <div className="flex justify-between gap-4">
+                  <div>
+                    <dt className="text-xs uppercase text-gray-400">Hours</dt>
+                    <dd>{formatHours(c.hours)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs uppercase text-gray-400">
+                      Target audience
+                    </dt>
+                    <dd>{c.target_audience_en ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs uppercase text-gray-400">Schedule</dt>
+                    <dd>{c.schedule_en ?? "—"}</dd>
+                  </div>
+                  <div className="flex flex-wrap gap-x-6 gap-y-2">
+                    <div>
+                      <dt className="text-xs uppercase text-gray-400">Start</dt>
+                      <dd className="font-mono text-xs">
+                        {c.start_date ?? "—"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs uppercase text-gray-400">End</dt>
+                      <dd className="font-mono text-xs">{c.end_date ?? "—"}</dd>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-x-6 gap-y-2">
                     <div>
                       <dt className="text-xs uppercase text-gray-400">Fee</dt>
                       <dd>{formatFee(c.fee_mop)}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs uppercase text-gray-400">Start</dt>
-                      <dd className="font-mono text-xs">{c.start_date ?? "—"}</dd>
+                      <dt className="text-xs uppercase text-gray-400">
+                        Other fee
+                      </dt>
+                      <dd>{formatFee(c.other_fee_mop)}</dd>
                     </div>
+                  </div>
+                  <div className="flex flex-wrap gap-x-6 gap-y-2">
+                    <div>
+                      <dt className="text-xs uppercase text-gray-400">Quota</dt>
+                      <dd>{c.quota ?? "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs uppercase text-gray-400">
+                        Available
+                      </dt>
+                      <dd>{c.available ?? "—"}</dd>
+                    </div>
+                  </div>
+                  <div>
+                    <dt className="text-xs uppercase text-gray-400">Days</dt>
+                    <dd className="font-mono text-xs">{formatWeekdayFlags(c)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs uppercase text-gray-400">Address</dt>
+                    <dd>{c.address_en ?? "—"}</dd>
                   </div>
                   <div>
                     <dt className="text-xs uppercase text-gray-400">Phone</dt>

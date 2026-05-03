@@ -17,6 +17,21 @@ function sanitizeSearchTerm(raw: string): string {
     .replace(/\s+/g, " ");
 }
 
+function numOrNull(v: unknown): number | null {
+  if (v === null || v === undefined) return null;
+  if (typeof v === "number" && !Number.isNaN(v)) return v;
+  const n = Number(v);
+  return Number.isNaN(n) ? null : n;
+}
+
+function boolOrNull(v: unknown): boolean | null {
+  if (v === null || v === undefined) return null;
+  if (typeof v === "boolean") return v;
+  if (v === "t" || v === "true" || v === 1) return true;
+  if (v === "f" || v === "false" || v === 0) return false;
+  return null;
+}
+
 function rowToCourse(row: Record<string, unknown>): PdacCourse {
   return {
     source_id: Number(row.source_id ?? 0),
@@ -25,21 +40,36 @@ function rowToCourse(row: Record<string, unknown>): PdacCourse {
     name_zh: row.name_zh != null ? String(row.name_zh) : null,
     org_name_zh: row.org_name_zh != null ? String(row.org_name_zh) : null,
     org_name_pt: row.org_name_pt != null ? String(row.org_name_pt) : null,
-    fee_mop:
-      row.fee_mop === null || row.fee_mop === undefined
-        ? null
-        : typeof row.fee_mop === "number"
-          ? row.fee_mop
-          : Number(row.fee_mop),
+    fee_mop: numOrNull(row.fee_mop),
+    other_fee_mop: numOrNull(row.other_fee_mop),
     start_date: row.start_date != null ? String(row.start_date) : null,
     end_date: row.end_date != null ? String(row.end_date) : null,
     tel: row.tel != null ? String(row.tel) : null,
     category_en: row.category_en != null ? String(row.category_en) : null,
     category_zh: row.category_zh != null ? String(row.category_zh) : null,
+    category_pt: row.category_pt != null ? String(row.category_pt) : null,
     target_audience_en:
       row.target_audience_en != null ? String(row.target_audience_en) : null,
+    target_audience_zh:
+      row.target_audience_zh != null ? String(row.target_audience_zh) : null,
+    target_audience_pt:
+      row.target_audience_pt != null ? String(row.target_audience_pt) : null,
     address_en: row.address_en != null ? String(row.address_en) : null,
+    address_zh: row.address_zh != null ? String(row.address_zh) : null,
+    hours: numOrNull(row.hours),
+    schedule_en: row.schedule_en != null ? String(row.schedule_en) : null,
+    schedule_zh: row.schedule_zh != null ? String(row.schedule_zh) : null,
+    schedule_pt: row.schedule_pt != null ? String(row.schedule_pt) : null,
+    quota: row.quota != null ? String(row.quota) : null,
+    available: row.available != null ? String(row.available) : null,
     web_url: row.web_url != null ? String(row.web_url) : null,
+    w0: boolOrNull(row.w0),
+    w1: boolOrNull(row.w1),
+    w2: boolOrNull(row.w2),
+    w3: boolOrNull(row.w3),
+    w4: boolOrNull(row.w4),
+    w5: boolOrNull(row.w5),
+    w6: boolOrNull(row.w6),
   };
 }
 
@@ -121,12 +151,14 @@ async function searchViaSupabase(
     `name_zh.ilike.${pattern}`,
     `org_name_zh.ilike.${pattern}`,
     `target_audience_en.ilike.${pattern}`,
+    `schedule_en.ilike.${pattern}`,
+    `address_en.ilike.${pattern}`,
   ].join(",");
 
   const { data, error } = await supabase
     .from("pdac_courses")
     .select(
-      "source_id, course_no, name_en, name_zh, org_name_zh, org_name_pt, fee_mop, start_date, end_date, tel, category_en, category_zh, target_audience_en, address_en, web_url"
+      "source_id, course_no, name_en, name_zh, org_name_zh, org_name_pt, fee_mop, other_fee_mop, start_date, end_date, tel, category_en, category_zh, category_pt, target_audience_en, target_audience_zh, target_audience_pt, address_en, address_zh, hours, schedule_en, schedule_zh, schedule_pt, quota, available, web_url, w0, w1, w2, w3, w4, w5, w6"
     )
     .or(orClause)
     .limit(maxResults);
