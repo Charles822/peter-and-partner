@@ -1,11 +1,45 @@
 import { createClient } from "@supabase/supabase-js";
 import type { PdacCourse } from "./pdac-types";
 
+const COLS =
+  "source_id, course_no, name_en, name_zh, org_name_zh, org_name_pt, fee_mop, other_fee_mop, start_date, end_date, tel, category_en, category_zh, category_pt, target_audience_en, target_audience_zh, target_audience_pt, address_en, address_zh, hours, schedule_en, schedule_zh, schedule_pt, quota, available, web_url, w0, w1, w2, w3, w4, w5, w6";
+
+/** Legacy single-page search cap (keyword-only helpers). */
 const MAX_RESULTS_CAP = 25;
+
+const DEFAULT_PAGE_SIZE = 20;
+const MAX_PAGE_SIZE = 50;
+const MAX_PAGE = 500;
+
+export type PdacSearchPagedParams = {
+  query: string;
+  page: number;
+  pageSize: number;
+  categoryEn: string | null;
+  addressContains: string | null;
+};
+
+export type PdacSearchPagedResult = {
+  courses: PdacCourse[];
+  /** Row count matching filters; `null` when the backend cannot compute it (Edge fallback). */
+  total: number | null;
+  page: number;
+  pageSize: number;
+};
 
 function clampMax(n: number): number {
   if (!Number.isFinite(n)) return 12;
   return Math.min(MAX_RESULTS_CAP, Math.max(1, Math.floor(n)));
+}
+
+function clampPageSize(n: number): number {
+  if (!Number.isFinite(n)) return DEFAULT_PAGE_SIZE;
+  return Math.min(MAX_PAGE_SIZE, Math.max(1, Math.floor(n)));
+}
+
+function clampPage(n: number): number {
+  if (!Number.isFinite(n)) return 1;
+  return Math.min(MAX_PAGE, Math.max(1, Math.floor(n)));
 }
 
 /** Strip characters that break PostgREST `or` / ilike patterns. */
@@ -73,6 +107,12 @@ function rowToCourse(row: Record<string, unknown>): PdacCourse {
   };
 }
 
+function hasSupabaseCredentials(): boolean {
+  return !!(
+    process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+}
+
 async function searchViaEdge(
   query: string,
   maxResults: number
@@ -109,42 +149,24 @@ async function searchViaEdge(
     throw new Error("Edge returned non-JSON");
   }
 
-  const courses = json && typeof json === "object" && "courses" in json
-    ? (json as { courses: unknown }).courses
-    : null;
+  const courses =
+    json && typeof json === "object" && "courses" in json
+      ? (json as { courses: unknown }).courses
+      : null;
 
   if (!Array.isArray(courses)) {
     return [];
   }
 
   return courses.map((c) =>
-    rowToCourse(typeof c === "object" && c !== null ? (c as Record<string, unknown>) : {})
+    rowToCourse(
+      typeof c === "object" && c !== null ? (c as Record<string, unknown>) : {}
+    )
   );
 }
 
-async function searchViaSupabase(
-  query: string,
-  maxResults: number
-): Promise<PdacCourse[]> {
-  const url = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) {
-    throw new Error(
-      "Missing backend: set PDAC_EDGE_SEARCH_URL or SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY"
-    );
-  }
-
-  const term = sanitizeSearchTerm(query);
-  if (!term) {
-    return [];
-  }
-
-  const pattern = `%${term}%`;
-  const supabase = createClient(url, serviceKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
-  const orClause = [
+function buildKeywordOrClause(pattern: string): string {
+  return [
     `name_en.ilike.${pattern}`,
     `course_no.ilike.${pattern}`,
     `category_en.ilike.${pattern}`,
@@ -154,26 +176,167 @@ async function searchViaSupabase(
     `schedule_en.ilike.${pattern}`,
     `address_en.ilike.${pattern}`,
   ].join(",");
+}
 
-  const { data, error } = await supabase
-    .from("pdac_courses")
-    .select(
-      "source_id, course_no, name_en, name_zh, org_name_zh, org_name_pt, fee_mop, other_fee_mop, start_date, end_date, tel, category_en, category_zh, category_pt, target_audience_en, target_audience_zh, target_audience_pt, address_en, address_zh, hours, schedule_en, schedule_zh, schedule_pt, quota, available, web_url, w0, w1, w2, w3, w4, w5, w6"
-    )
-    .or(orClause)
-    .limit(maxResults);
+async function searchViaSupabasePaged(
+  params: PdacSearchPagedParams
+): Promise<PdacSearchPagedResult> {
+  const url = process.env.SUPABASE_URL!;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabase = createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  const page = clampPage(params.page);
+  const pageSize = clampPageSize(params.pageSize);
+  const offset = (page - 1) * pageSize;
+
+  const term = sanitizeSearchTerm(params.query);
+  const categoryTrimmed = params.categoryEn?.trim() ?? "";
+  const categoryFilter = categoryTrimmed.length > 0 ? categoryTrimmed : null;
+  const addrTerm = sanitizeSearchTerm(params.addressContains ?? "");
+
+  let q = supabase.from("pdac_courses").select(COLS, { count: "exact" });
+
+  if (term) {
+    const pattern = `%${term}%`;
+    q = q.or(buildKeywordOrClause(pattern));
+  }
+  if (categoryFilter) {
+    q = q.eq("category_en", categoryFilter);
+  }
+  if (addrTerm) {
+    q = q.ilike("address_en", `%${addrTerm}%`);
+  }
+
+  q = q
+    .order("start_date", { ascending: true, nullsFirst: false })
+    .order("source_id", { ascending: true })
+    .range(offset, offset + pageSize - 1);
+
+  const { data, error, count } = await q;
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return (data ?? []).map((row) =>
-    rowToCourse(row as Record<string, unknown>)
-  );
+  return {
+    courses: (data ?? []).map((row) =>
+      rowToCourse(row as Record<string, unknown>)
+    ),
+    total: count ?? 0,
+    page,
+    pageSize,
+  };
 }
 
 /**
- * Uses PDAC_EDGE_SEARCH_URL when set; otherwise Supabase `pdac_courses` with service role (server-only).
+ * Paged search with optional category and address filters.
+ * Uses Supabase when `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` are set (also when `PDAC_EDGE_SEARCH_URL` is set).
+ * Edge-only installs: page 1, no filters, keyword-only; `total` is unknown (`null`).
+ */
+export async function searchPdacCoursesPaged(
+  raw: PdacSearchPagedParams
+): Promise<PdacSearchPagedResult> {
+  const page = clampPage(raw.page);
+  const pageSize = clampPageSize(raw.pageSize);
+
+  if (hasSupabaseCredentials()) {
+    return searchViaSupabasePaged({
+      ...raw,
+      page,
+      pageSize,
+    });
+  }
+
+  if (process.env.PDAC_EDGE_SEARCH_URL) {
+    if (page !== 1) {
+      throw new Error(
+        "Pagination beyond page 1 requires Supabase (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY)."
+      );
+    }
+    if (raw.categoryEn?.trim() || sanitizeSearchTerm(raw.addressContains ?? "")) {
+      throw new Error(
+        "Category and location filters require Supabase (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY)."
+      );
+    }
+    const term = sanitizeSearchTerm(raw.query);
+    if (!term) {
+      return { courses: [], total: 0, page: 1, pageSize };
+    }
+    const courses = await searchViaEdge(term, pageSize);
+    return {
+      courses,
+      total: null,
+      page: 1,
+      pageSize,
+    };
+  }
+
+  throw new Error(
+    "Missing backend: set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY, or PDAC_EDGE_SEARCH_URL for keyword-only search."
+  );
+}
+
+/** Distinct non-null `category_en` values, sorted. Requires Supabase credentials. */
+export async function fetchPdacCategories(): Promise<string[]> {
+  const url = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) {
+    throw new Error(
+      "Categories require SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY."
+    );
+  }
+
+  const supabase = createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  const seen = new Set<string>();
+  const batch = 1000;
+  let from = 0;
+
+  for (;;) {
+    const { data, error } = await supabase
+      .from("pdac_courses")
+      .select("category_en")
+      .not("category_en", "is", null)
+      .range(from, from + batch - 1);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    if (!data?.length) break;
+
+    for (const row of data) {
+      const c = row.category_en != null ? String(row.category_en).trim() : "";
+      if (c) seen.add(c);
+    }
+
+    if (data.length < batch) break;
+    from += batch;
+    if (from > 200_000) break;
+  }
+
+  return [...seen].sort((a, b) => a.localeCompare(b));
+}
+
+async function searchViaSupabase(
+  query: string,
+  maxResults: number
+): Promise<PdacCourse[]> {
+  const r = await searchViaSupabasePaged({
+    query,
+    page: 1,
+    pageSize: maxResults,
+    categoryEn: null,
+    addressContains: null,
+  });
+  return r.courses;
+}
+
+/**
+ * Uses PDAC_EDGE_SEARCH_URL when set (unless Supabase credentials exist — then Supabase is used for parity with paged search); otherwise Supabase `pdac_courses` with service role (server-only).
  */
 export async function searchPdacCourses(
   query: string,
@@ -185,9 +348,15 @@ export async function searchPdacCourses(
     return [];
   }
 
+  if (hasSupabaseCredentials()) {
+    return searchViaSupabase(trimmed, maxResults);
+  }
+
   if (process.env.PDAC_EDGE_SEARCH_URL) {
     return searchViaEdge(trimmed, maxResults);
   }
 
-  return searchViaSupabase(trimmed, maxResults);
+  throw new Error(
+    "Missing backend: set PDAC_EDGE_SEARCH_URL or SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY"
+  );
 }

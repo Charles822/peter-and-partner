@@ -2,19 +2,57 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Code2 } from "lucide-react";
 import { CessSearchClient } from "./CessSearchClient";
+import {
+  cessFaqItems,
+  cessJsonLd,
+  CESS_METADATA_DESCRIPTION,
+  CESS_METADATA_TITLE,
+  CESS_OG_TITLE,
+} from "./cess-jsonld";
 
 const CAL_BOOKING_URL = "https://cal.com/charles-fauchet-58ajxq/30min";
 
 export const metadata: Metadata = {
-  title: "CEF course search (unofficial)",
-  description:
-    "Keyword search for Macao continuing education (PDAC / CEF) courses — unofficial mirror for English speakers. Built by On-Call CTO; verify all details on the official DSEDJ site.",
+  title: CESS_METADATA_TITLE,
+  description: CESS_METADATA_DESCRIPTION,
   robots: { index: true, follow: true },
+  keywords: [
+    "Macao continuing education",
+    "PDAC courses",
+    "CEF courses Macao",
+    "DSEDJ courses English",
+    "Macao PDAC search",
+    "continuing education Macao",
+  ],
+  alternates: {
+    canonical: "/cess",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_MO",
+    url: "/cess",
+    siteName: "On-Call CTO",
+    title: CESS_OG_TITLE,
+    description: CESS_METADATA_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: CESS_OG_TITLE,
+    description: CESS_METADATA_DESCRIPTION,
+  },
 };
 
 export default function CessPage() {
+  const faqItems = cessFaqItems();
+
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(cessJsonLd()),
+        }}
+      />
       <header className="sticky top-0 z-40 border-b border-gray-100 bg-[#FAFAFA]/90 backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
           <Link
@@ -59,6 +97,30 @@ export default function CessPage() {
         </div>
 
         <CessSearchClient />
+
+        <section
+          className="mt-14 rounded-3xl border border-gray-100 bg-white p-6 md:p-8 shadow-sm"
+          aria-labelledby="cess-faq-heading"
+        >
+          <h2
+            id="cess-faq-heading"
+            className="text-xl font-medium font-serif text-gray-900 mb-6"
+          >
+            Questions about this search
+          </h2>
+          <dl className="space-y-6">
+            {faqItems.map((item) => (
+              <div key={item.question}>
+                <dt className="font-medium font-montserrat text-gray-900 mb-2">
+                  {item.question}
+                </dt>
+                <dd className="text-gray-600 font-montserrat text-sm leading-relaxed">
+                  {item.answer}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
         <section className="mt-16 pt-12 border-t border-gray-200 text-center">
           <p className="text-gray-600 font-montserrat text-sm mb-4 max-w-xl mx-auto">
